@@ -60,9 +60,13 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
     if(flag_l && argc%2 || flag_n || flag_f){
+        if(!flag_l && argc%2)
+            exit(EXIT_FAILURE);
         login = (char *) malloc(strlen(argv[argc-1])*sizeof(char));
         strcpy(login, argv[argc-1]);
     }
+    else
+        exit(EXIT_FAILURE);
 
     if(flag_n)
         flag[0] = 'n';

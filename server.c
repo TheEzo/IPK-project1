@@ -13,7 +13,7 @@
 #define BUFFSIZE 1024
 int main (int argc, char **argv) {
     int flag_n = 0, flag_f = 0, flag_l = 0;
-    char *login;
+    char *login = NULL;
     int c;
     int port = 0, welcome_socket;
     struct sockaddr_in6 sa;
@@ -65,7 +65,7 @@ int main (int argc, char **argv) {
         int comm_socket = accept(welcome_socket, (struct sockaddr*)&sa_client, &sa_client_len);
         if (comm_socket > 0)
         {
-            char buffer[BUFFSIZE];
+            char buffer[BUFFSIZE] = "\0";
             ssize_t res = 0;
             res = recv(comm_socket, buffer, BUFFSIZE,0);
             if (res <= 0)
@@ -76,26 +76,26 @@ int main (int argc, char **argv) {
                  flag_f = 1;
             else if(buffer[0] == 'l')
                 flag_l = 1;
-            if(flag_l && strlen(buffer) < 1 || flag_f || flag_n){
-                login = (char *) malloc(strlen(buffer -1)*sizeof(char));
+            if(flag_l && strlen(buffer) > 1 || flag_f || flag_n){
+                login = (char *) malloc(strlen(buffer-1)*sizeof(char));
                 strcpy(login, buffer+1);
             }
-            printf("%s\n", login);
+
             FILE *f = fopen("/etc/passwd", "r");
             if(f == NULL){
                 perror("File failed to open\n");
                 exit(EXIT_FAILURE);
             }
             while(fgets(buffer, BUFFSIZE, f) != NULL){
-                printf("%s\n", login);
+                int fail = 0;
                 if(login != NULL){
-//                    if(flag_l){
-//                        int i = strlen(login) -1;
-//                        printf("%c", login[i]);
-//                    }
-//                    else{
-//
-//                    }
+                    for(int i = 0; i < strlen(login); i++){
+                        if(login[i] != buffer[i]){
+                            fail = 1;
+                        }
+                    }
+                    if(fail)
+                        continue;
                 }
                 while(1){
                     char *pch;
@@ -106,7 +106,6 @@ int main (int argc, char **argv) {
                             pch = strtok(NULL, ":");
                             i++;
                         }
-                        strcpy(buffer, pch);
                     }
                     else if(flag_f){
                         pch = strtok(buffer, ":");
@@ -115,11 +114,11 @@ int main (int argc, char **argv) {
                             pch = strtok(NULL, ":");
                             i++;
                         }
-                        strcpy(buffer, pch);
                     }
                     else if(flag_l){
-
+                        pch = strtok(buffer, ":");
                     }
+                    strcpy(buffer, pch);
                     strcat(buffer, "\n");
                     send(comm_socket, buffer, BUFFSIZE, 0);
                     recv(comm_socket, buffer, BUFFSIZE, 0);
