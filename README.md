@@ -3,5 +3,5 @@
 
 Autor - Tomáš Willaschek (xwilla00)
 
-[Zadání](https://wis.fit.vutbr.cz/FIT/st/course-sl.php?id=641439&item=67261&cpa=1)
-[Dokumentace](./doc.md)
+* [Zadání](https://wis.fit.vutbr.cz/FIT/st/course-sl.php?id=641439&item=67261&cpa=1)
+* [Dokumentace](./doc.md)
